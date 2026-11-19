@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chi Sono? Carriere</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800&family=Barlow:wght@400;500;600&display=swap">
+<style>
+/* Layout: una "figurina" centrale con il tabellino della carriera, sotto la casella per indovinare */
+:root{
+  --bg:#eef1ea; --paper:#fbfcf8; --ink:#16231b; --muted:#5d6b61; --line:#d5ddd3;
+  --pitch:#1f6b3a; --pitch-ink:#ffffff; --gold:#c8962b; --ok:#1f8a4c; --bad:#c2412d;
+  --row:#f2f5ef;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0d1611; --paper:#14211a; --ink:#e9f0ea; --muted:#9db0a2; --line:#27392e;
+  --pitch:#2f8a50; --pitch-ink:#ffffff; --gold:#e0b04a; --ok:#47c07a; --bad:#ec6a55; --row:#182820;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1611; --paper:#14211a; --ink:#e9f0ea; --muted:#9db0a2; --line:#27392e;
+  --pitch:#2f8a50; --pitch-ink:#ffffff; --gold:#e0b04a; --ok:#47c07a; --bad:#ec6a55; --row:#182820;
+  color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:24px 48px}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.4rem,7vw,3.4rem);line-height:.9;margin:0;text-transform:uppercase;letter-spacing:.01em}
+h1 span{color:var(--pitch)}
+.sub{margin:6px 0 0;color:var(--muted);font-size:.95rem}
+.score{display:flex;gap:18px;font-family:var(--display);text-transform:uppercase}
+.score div{display:flex;flex-direction:column;align-items:flex-end}
+.score small{font-size:.75rem;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.score b{font-size:1.8rem;line-height:1;font-variant-numeric:tabular-nums}
+
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.card-head{background:var(--pitch);color:var(--pitch-ink);padding:14px 18px;display:flex;justify-content:space-between;align-items:center;gap:12px;
+  background-image:repeating-linear-gradient(90deg,transparent 0 48px,rgba(255,255,255,.06) 48px 96px)}
+.card-head .q{font-family:var(--display);font-weight:800;font-size:1.9rem;letter-spacing:.04em;text-transform:uppercase;line-height:1}
+.card-head .n{font-family:var(--display);font-weight:600;font-size:.95rem;letter-spacing:.08em;text-transform:uppercase;opacity:.85}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums}
+th{font-family:var(--display);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:var(--muted);text-align:left;padding:10px 18px;border-bottom:1px solid var(--line)}
+th.num,td.num{text-align:right}
+td{padding:10px 18px;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even){background:var(--row)}
+td.years{font-family:var(--display);font-weight:600;font-size:1.05rem;white-space:nowrap;color:var(--muted)}
+td.team{font-weight:600}
+td.team .loan{font-weight:500;font-size:.8rem;color:var(--muted);margin-left:6px}
+td.num{font-family:var(--display);font-weight:700;font-size:1.15rem}
+tfoot td{font-family:var(--display);font-weight:800;text-transform:uppercase;letter-spacing:.04em;border-top:2px solid var(--ink);background:transparent}
+
+.hints{display:flex;flex-wrap:wrap;gap:8px;padding:12px 18px;border-top:1px solid var(--line)}
+.chip{font-size:.85rem;padding:4px 10px;border-radius:99px;border:1px solid var(--line);color:var(--muted)}
+.chip b{color:var(--ink);font-weight:600}
+
+form{display:flex;gap:10px;flex-wrap:wrap}
+input[type=text]{flex:1 1 260px;min-width:0;font:inherit;font-size:1.1rem;padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+input[type=text]:focus{outline:none;border-color:var(--pitch)}
+button{font-family:var(--display);font-weight:700;font-size:1.05rem;text-transform:uppercase;letter-spacing:.06em;padding:12px 18px;border-radius:10px;border:2px solid var(--pitch);cursor:pointer;background:var(--pitch);color:var(--pitch-ink)}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button.ghost:hover:not(:disabled){border-color:var(--ink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.actions{display:flex;gap:10px;flex-wrap:wrap}
+
+.msg{min-height:1.6em;font-weight:600}
+.msg.ok{color:var(--ok)} .msg.bad{color:var(--bad)}
+.reveal{font-family:var(--display);font-weight:800;font-size:2rem;text-transform:uppercase;line-height:1.05}
+.tries{display:flex;flex-wrap:wrap;gap:6px}
+.tries span{font-size:.85rem;text-decoration:line-through;color:var(--bad);border:1px solid var(--line);border-radius:6px;padding:2px 8px}
+.note{font-size:.82rem;color:var(--muted)}
+.shake{animation:shake .35s}
+@keyframes shake{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+@media (prefers-reduced-motion:reduce){.shake{animation:none}}
+@media (max-width:480px){th,td{padding:9px 10px} .hints{padding:12px 10px}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Chi <span>sono?</span></h1>
+      <p class="sub">Leggi la carriera e indovina il calciatore.</p>
+    </div>
+    <div class="score">
+      <div><small>Punti</small><b id="pts">0</b></div>
+      <div><small>Serie</small><b id="streak">0</b></div>
+      <div><small>Record</small><b id="best">0</b></div>
+    </div>
+  </header>
+
+  <section class="card" aria-live="polite">
+    <div class="card-head">
+      <span class="q" id="cardTitle">???</span>
+      <span class="n" id="cardNum"></span>
+    </div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Stagioni</th><th>Squadra</th><th class="num">Pres.</th><th class="num">Gol</th></tr></thead>
+        <tbody id="rows"></tbody>
+        <tfoot><tr><td colspan="2">Totale</td><td class="num" id="totA"></td><td class="num" id="totG"></td></tr></tfoot>
+      </table>
+    </div>
+    <div class="hints" id="hints"></div>
+  </section>
+
+  <form id="guessForm" autocomplete="off">
+    <input type="text" id="guess" placeholder="Nome o cognome del giocatore…" aria-label="Il tuo tentativo">
+    <button type="submit" id="btnGuess">Indovina</button>
+  </form>
+
+  <div class="actions">
+    <button type="button" class="ghost" id="btnHint">Indizio (−20)</button>
+    <button type="button" class="ghost" id="btnGive">Mi arrendo</button>
+    <button type="button" class="ghost" id="btnNext">Prossimo giocatore</button>
+  </div>
+
+  <div class="msg" id="msg"></div>
+  <div class="tries" id="tries"></div>
+
+  <p class="note">Presenze e gol si riferiscono al solo campionato; i numeri sono indicativi. Basta il cognome, piccoli errori di battitura sono accettati. Ogni risposta corretta vale 100 punti, meno 20 per indizio e 10 per errore.</p>
+</div>
+
+<script>
+// [stagioni, squadra, presenze, gol, prestito?]
+const PLAYERS = [
+ {name:"Francesco Totti", alias:["totti","er pupone"], nat:"Italia", role:"Attaccante", born:1976,
+  c:[["1992–2017","Roma",619,250]]},
+ {name:"Alessandro Del Piero", alias:["del piero","delpiero","pinturicchio"], nat:"Italia", role:"Attaccante", born:1974,
+  c:[["1991–1993","Padova",14,1],["1993–2012","Juventus",513,208],["2012–2014","Sydney FC",48,24],["2014","Delhi Dynamos",10,1]]},
+ {name:"Andrea Pirlo", alias:["pirlo"], nat:"Italia", role:"Centrocampista", born:1979,
+  c:[["1995–1998","Brescia",47,6],["1998–2001","Inter",22,0],["1999–2000","Reggina",28,6,1],["2001","Brescia",10,0,1],["2001–2011","Milan",284,32],["2011–2015","Juventus",119,16],["2015–2017","New York City",60,1]]},
+ {name:"Zlatan Ibrahimović", alias:["ibrahimovic","zlatan","ibra"], nat:"Svezia", role:"Attaccante", born:1981,
+  c:[["1999–2001","Malmö",40,16],["2001–2004","Ajax",74,35],["2004–2006","Juventus",70,23],["2006–2009","Inter",88,57],["2009–2011","Barcellona",29,16],["2010–2012","Milan",61,42],["2012–2016","Paris Saint-Germain",122,113],["2016–2018","Manchester United",33,17],["2018–2019","LA Galaxy",56,53],["2020–2023","Milan",64,34]]},
+ {name:"Gabriel Batistuta", alias:["batistuta","batigol","bati"], nat:"Argentina", role:"Attaccante", born:1969,
+  c:[["1988–1989","Newell's Old Boys",24,7],["1989–1990","River Plate",21,4],["1990–1991","Boca Juniors",34,13],["1991–2000","Fiorentina",269,168],["2000–2003","Roma",63,30],["2003","Inter",12,2,1],["2003–2005","Al-Arabi",21,25]]},
+ {name:"Andriy Shevchenko", alias:["shevchenko","sheva","sevchenko","schevchenko"], nat:"Ucraina", role:"Attaccante", born:1976,
+  c:[["1994–1999","Dinamo Kiev",117,60],["1999–2006","Milan",208,127],["2006–2009","Chelsea",48,9],["2008–2009","Milan",18,0,1],["2009–2012","Dinamo Kiev",55,23]]},
+ {name:"Kaká", alias:["kaka","ricardo kaka"], nat:"Brasile", role:"Centrocampista", born:1982,
+  c:[["2001–2003","San Paolo",59,23],["2003–2009","Milan",193,70],["2009–2013","Real Madrid",85,23],["2013–2014","Milan",30,7],["2014","San Paolo",19,2,1],["2015–2017","Orlando City",75,24]]},
+ {name:"Ronaldo Nazário", alias:["ronaldo","il fenomeno","fenomeno","ronaldo nazario"], nat:"Brasile", role:"Attaccante", born:1976,
+  c:[["1993–1994","Cruzeiro",14,12],["1994–1996","PSV",46,42],["1996–1997","Barcellona",37,34],["1997–2002","Inter",68,49],["2002–2007","Real Madrid",127,83],["2007–2008","Milan",20,9],["2009–2011","Corinthians",31,18]]},
+ {name:"Thierry Henry", alias:["henry","titi"], nat:"Francia", role:"Attaccante", born:1977,
+  c:[["1994–1999","Monaco",105,20],["1999","Juventus",16,3],["1999–2007","Arsenal",254,174],["2007–2010","Barcellona",80,35],["2010–2014","New York Red Bulls",122,51],["2012","Arsenal",4,1,1]]},
+ {name:"Christian Vieri", alias:["vieri","bobo vieri","bobo"], nat:"Italia", role:"Attaccante", born:1973,
+  c:[["1991–1992","Torino",7,1],["1992–1993","Pisa",18,2],["1993–1994","Ravenna",32,12],["1994–1995","Venezia",29,11],["1995–1996","Atalanta",19,7],["1996–1997","Juventus",23,8],["1997–1998","Atlético Madrid",24,24],["1998–1999","Lazio",22,12],["1999–2005","Inter",144,103],["2005–2006","Milan",8,1],["2006","Monaco",7,3],["2006–2007","Atalanta",7,2],["2007–2008","Fiorentina",26,6],["2008–2009","Atalanta",9,0]]},
+ {name:"Roberto Baggio", alias:["baggio","divin codino","codino"], nat:"Italia", role:"Attaccante", born:1967,
+  c:[["1982–1985","Vicenza",36,13],["1985–1990","Fiorentina",94,39],["1990–1995","Juventus",141,78],["1995–1997","Milan",51,12],["1997–1998","Bologna",30,22],["1998–2000","Inter",41,9],["2000–2004","Brescia",95,45]]},
+ {name:"Paolo Maldini", alias:["maldini"], nat:"Italia", role:"Difensore", born:1968,
+  c:[["1984–2009","Milan",647,29]]},
+ {name:"Luca Toni", alias:["toni"], nat:"Italia", role:"Attaccante", born:1977,
+  c:[["1994–1996","Modena",34,7],["1996–1997","Empoli",3,1],["1997–1998","Fiorenzuola",26,2],["1998–1999","Lodigiani",31,15],["1999–2000","Treviso",35,15],["2000–2001","Vicenza",31,9],["2001–2003","Brescia",44,15],["2003–2005","Palermo",80,50],["2005–2007","Fiorentina",67,47],["2007–2010","Bayern Monaco",60,38],["2010","Roma",15,5,1],["2010–2011","Genoa",16,3],["2011–2012","Juventus",14,2],["2012","Al-Nasr",8,5],["2012–2013","Fiorentina",27,8],["2013–2016","Hellas Verona",95,48]]},
+ {name:"Diego Armando Maradona", alias:["maradona","diego maradona","el pibe de oro","pibe de oro","diego"], nat:"Argentina", role:"Attaccante / Trequartista", born:1960,
+  c:[["1976–1981","Argentinos Juniors",166,116],["1981–1982","Boca Juniors",40,28],["1982–1984","Barcellona",36,22],["1984–1991","Napoli",188,81],["1992–1993","Siviglia",26,5],["1993","Newell's Old Boys",5,0],["1995–1997","Boca Juniors",30,7]]},
+ {name:"Gianluigi Buffon", alias:["buffon","gigi buffon","superman"], nat:"Italia", role:"Portiere", born:1978,
+  c:[["1995–2001","Parma",168,0],["2001–2018","Juventus",509,0],["2018–2019","Paris Saint-Germain",17,0],["2019–2021","Juventus",23,0],["2021–2023","Parma",45,0]]},
+ {name:"Fernando Torres", alias:["torres","el nino","nino torres"], nat:"Spagna", role:"Attaccante", born:1984,
+  c:[["2001–2007","Atlético Madrid",214,82],["2007–2011","Liverpool",102,65],["2011–2015","Chelsea",110,20],["2014–2015","Milan",10,1],["2015–2018","Atlético Madrid",116,27],["2018–2019","Sagan Tosu",35,5]]},
+ {name:"Hernán Crespo", alias:["crespo","valdanito"], nat:"Argentina", role:"Attaccante", born:1975,
+  c:[["1993–1996","River Plate",62,24],["1996–2000","Parma",116,62],["2000–2002","Lazio",54,39],["2002–2003","Inter",18,7],["2003–2008","Chelsea",49,20],["2004–2005","Milan",28,10,1],["2006–2009","Inter",59,19],["2009–2010","Genoa",13,5],["2010–2012","Parma",30,7]]},
+ {name:"Antonio Di Natale", alias:["di natale","dinatale","toto di natale"], nat:"Italia", role:"Attaccante", born:1977,
+  c:[["1996–2004","Empoli",157,48],["2004–2016","Udinese",385,191]]}
+];
+
+const $ = id => document.getElementById(id);
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase().replace(/[^a-z ]/g," ").replace(/\s+/g," ").trim();
+
+function lev(a,b){
+  const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+  let prev=Array.from({length:n+1},(_,j)=>j);
+  for(let i=1;i<=m;i++){const cur=[i];for(let j=1;j<=n;j++){cur[j]=Math.min(prev[j]+1,cur[j-1]+1,prev[j-1]+(a[i-1]===b[j-1]?0:1));}prev=cur;}
+  return prev[n];
+}
+function matches(p, guess){
+  const g = norm(guess); if(g.length<3) return false;
+  const full = norm(p.name);
+  const parts = full.split(" ");
+  const surname = parts.slice(1).join(" ") || parts[0];
+  const targets = new Set([full, surname, ...p.alias.map(norm)]);
+  for(const t of targets){
+    if(g===t) return true;
+    const tol = t.length>=8 ? 2 : t.length>=5 ? 1 : 0;
+    if(lev(g,t)<=tol) return true;
+  }
+  // guess contains the surname, e.g. "andrea pirlo" spelled oddly
+  return g.split(" ").some(w => w.length>=4 && (w===norm(surname).replace(/ /g,"") || lev(w,norm(surname))<=1));
+}
+
+const store = {get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v);}catch(e){return d;}},
+               set(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}};
+
+let deck=[], cur=null, hintsUsed=0, wrong=0, done=false, played=0;
+let pts=0, streak=0, best=store.get("chisono-best",0);
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function next(){
+  if(!deck.length) deck = shuffle(PLAYERS.map((_,i)=>i));
+  cur = PLAYERS[deck.pop()];
+  hintsUsed=0; wrong=0; done=false; played++;
+  render();
+  $("guess").value=""; $("guess").focus({preventScroll:true});
+}
+
+function render(){
+  $("cardTitle").textContent = done ? cur.name : "???";
+  $("cardNum").textContent = "Giocatore n. " + played;
+  $("rows").innerHTML = cur.c.map(([y,t,a,g,loan]) =>
+    `<tr><td class="years">${y}</td><td class="team">${t}${loan?'<span class="loan">(prestito)</span>':''}</td><td class="num">${a}</td><td class="num">${g}</td></tr>`).join("");
+  $("totA").textContent = cur.c.reduce((s,r)=>s+r[2],0);
+  $("totG").textContent = cur.c.reduce((s,r)=>s+r[3],0);
+  const H = [["Nazionalità",cur.nat],["Ruolo",cur.role],["Nato nel",cur.born],["Iniziali",cur.name.split(" ").map(w=>w[0]+".").join(" ")]];
+  const shown = done ? H.length : hintsUsed;
+  $("hints").innerHTML = shown ? H.slice(0,shown).map(([k,v])=>`<span class="chip">${k}: <b>${v}</b></span>`).join("")
+                               : `<span class="chip">Nessun indizio usato</span>`;
+  $("hints").hidden = false;
+  $("btnHint").disabled = done || hintsUsed>=H.length;
+  $("btnGive").disabled = done; $("btnGuess").disabled = done; $("guess").disabled = done;
+  if(!done){ $("msg").textContent=""; $("msg").className="msg"; $("tries").innerHTML=""; }
+  $("pts").textContent=pts; $("streak").textContent=streak; $("best").textContent=best;
+}
+
+$("guessForm").addEventListener("submit", e=>{
+  e.preventDefault();
+  if(done) return;
+  const g = $("guess").value.trim(); if(!g) return;
+  if(matches(cur,g)){
+    const gain = Math.max(10, 100 - hintsUsed*20 - wrong*10);
+    pts += gain; streak++; if(pts>best){best=pts; store.set("chisono-best",best);}
+    done=true; render();
+    $("msg").className="msg ok"; $("msg").innerHTML = `<div class="reveal">${cur.name}</div>Esatto! +${gain} punti.`;
+    $("btnNext").focus();
+  } else {
+    wrong++;
+    $("tries").insertAdjacentHTML("beforeend", `<span>${g.replace(/[<>&]/g,"")}</span>`);
+    $("msg").className="msg bad"; $("msg").textContent = "No, non è lui. Riprova.";
+    const f=$("guessForm"); f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake");
+    $("guess").select();
+  }
+});
+$("btnHint").addEventListener("click", ()=>{ if(!done){hintsUsed++; render(); $("msg").textContent="";} });
+$("btnGive").addEventListener("click", ()=>{
+  done=true; streak=0; render();
+  $("msg").className="msg bad"; $("msg").innerHTML=`<div class="reveal">${cur.name}</div>Era lui. La serie si azzera.`;
+});
+$("btnNext").addEventListener("click", ()=>{ if(!done) streak=0; next(); });
+
+next();
+</script>
+
+</html>
