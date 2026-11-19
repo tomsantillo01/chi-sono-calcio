@@ -17,13 +17,14 @@ export default function App() {
   const [points, setPoints] = useState(() => Number(localStorage.getItem('who-is-points')) || 0)
   const [streak, setStreak] = useState(() => Number(localStorage.getItem('who-is-streak')) || 0)
   const [player, setPlayer] = useState<Player | null>(null)
+  const [round, setRound] = useState(0)
   useEffect(() => localStorage.setItem('who-is-points', String(points)), [points])
   useEffect(() => localStorage.setItem('who-is-streak', String(streak)), [streak])
   useEffect(() => { if (route === '/play' && !player) setPlayer(pickPlayer(level)) }, [route, player, level])
-  const startGame = () => { setPlayer(pickPlayer(level)); navigate('/play') }
+  const startGame = () => { setPlayer(pickPlayer(level)); setRound(value => value + 1); navigate('/play') }
   return <main className="app-shell"><AnimatePresence mode="wait">
     {route === '/' && <Menu key="menu" {...{ level, setLevel, points, streak, startGame }} openTutorial={() => navigate('/tutorial')}/>} 
     {route === '/tutorial' && <Tutorial key="tutorial" back={() => navigate('/')}/>} 
-    {route === '/play' && player && <Game key="game" {...{ player, level, points, streak, setPoints, setStreak, startGame }} quit={() => navigate('/')}/>} 
+    {route === '/play' && player && <Game key={`game-${round}`} {...{ player, level, points, streak, setPoints, setStreak, startGame }} quit={() => navigate('/')}/>} 
   </AnimatePresence></main>
 }
