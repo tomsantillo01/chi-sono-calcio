@@ -5,5 +5,6 @@ import './styles.css'
 import './game.css'
 import './menu.css'
 import './theme.css'
+import './mobile.css'
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>)
